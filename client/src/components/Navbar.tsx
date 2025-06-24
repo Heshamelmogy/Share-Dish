@@ -11,6 +11,11 @@ import Tooltip from '@mui/material/Tooltip';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
+const API_URL =
+  window.location.hostname.includes("github.dev") || window.location.hostname.includes("app.github.dev")
+    ? "https://shiny-guide-q77q6pw7xwg42x6g-5000.app.github.dev"
+    : "http://localhost:5000";
+
 const Navbar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();

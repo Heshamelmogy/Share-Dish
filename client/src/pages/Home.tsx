@@ -41,9 +41,6 @@ interface Post {
   };
 }
 
-const API_URL = process.env.REACT_APP_API_URL;
-console.log("API_URL (dev hack):", API_URL);
-
 const Home: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
