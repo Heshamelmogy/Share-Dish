@@ -12,6 +12,11 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import axios from 'axios';
 import { Email, Lock, Person, Wc, CalendarToday } from '@mui/icons-material';
 
+const API_URL =
+  window.location.hostname.includes("github.dev") || window.location.hostname.includes("app.github.dev")
+    ? "https://shiny-guide-q77q6pw7xwg42x6g-5000.app.github.dev"
+    : "http://localhost:5000";
+
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -142,13 +147,13 @@ const Login: React.FC = () => {
 
         // Check if user exists in MongoDB
         try {
-          const response = await axios.get(`http://localhost:5000/api/users/firebase/${userCredential.user.uid}`);
+          const response = await axios.get(`${API_URL}/api/users/firebase/${userCredential.user.uid}`);
           console.log('MongoDB user check response:', response.data);
           
           if (!response.data) {
             // If user doesn't exist in MongoDB, create it
             console.log('Creating MongoDB user profile...');
-            const createResponse = await axios.post('http://localhost:5000/api/users/profile', {
+            const createResponse = await axios.post(`${API_URL}/api/users/profile`, {
               firebaseUid: userCredential.user.uid,
               email: userCredential.user.email,
               firstName: '', // These will be empty for existing users
