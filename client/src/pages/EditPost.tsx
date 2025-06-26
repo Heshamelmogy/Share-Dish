@@ -22,18 +22,11 @@ const EditPost: React.FC = () => {
   const [address, setAddress] = useState('');
   const [pickupTime, setPickupTime] = useState('');
 
-  const API_URL = process.env.REACT_APP_API_URL;
-
-  const API_URL =
-    window.location.hostname.includes("github.dev") || window.location.hostname.includes("app.github.dev")
-      ? "https://shiny-guide-q77q6pw7xwg42x6g-5000.app.github.dev"
-      : "http://localhost:5000";
-
   useEffect(() => {
     const fetchPost = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${API_URL}/api/posts`);
+        const response = await axios.get(`/api/posts`);
         const found = response.data.find((p: any) => p._id === id);
         console.log('Fetched post for editing:', found);
         if (!found) throw new Error('Post not found');
@@ -60,7 +53,7 @@ const EditPost: React.FC = () => {
     formData.append('image', file);
     try {
       setSaving(true);
-      const response = await axios.post(`${API_URL}/api/posts/upload`, formData);
+      const response = await axios.post(`/api/posts/upload`, formData);
       setPhoto(response.data.url);
       setError(null);
     } catch (err) {
@@ -75,7 +68,7 @@ const EditPost: React.FC = () => {
     setSaving(true);
     setError(null);
     try {
-      await axios.patch(`${API_URL}/api/posts/${id}`, {
+      await axios.patch(`/api/posts/${id}`, {
         photo,
         description,
         ingredients: ingredients.split(',').map((i) => i.trim()),
@@ -120,7 +113,7 @@ const EditPost: React.FC = () => {
               {photo && (
                 <Box sx={{ mt: 2 }}>
                   <img
-                    src={photo.startsWith('http') ? photo : `${API_URL}${photo}`}
+                    src={photo}
                     alt="Meal"
                     style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px' }}
                   />

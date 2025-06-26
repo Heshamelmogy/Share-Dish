@@ -23,8 +23,6 @@ interface Ingredient {
   quantity: string;
 }
 
-const API_URL = process.env.REACT_APP_API_URL;
-
 const AddPost: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -47,7 +45,7 @@ const AddPost: React.FC = () => {
       if (!user) return;
       
       try {
-        const response = await axios.get(`${API_URL}/api/users/firebase/${user.uid}`);
+        const response = await axios.get('/api/users/firebase/' + user.uid);
         setMongoUserId(response.data._id);
       } catch (err) {
         console.error('Error fetching MongoDB user ID:', err);
@@ -76,7 +74,7 @@ const AddPost: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post(`${API_URL}/api/posts/upload`, formData);
+      const response = await axios.post('/api/posts/upload', formData);
       setPhoto(response.data.url);
       setError(null);
     } catch (err) {
@@ -137,7 +135,7 @@ const AddPost: React.FC = () => {
       };
 
       console.log('Submitting post data:', postData);
-      const response = await axios.post(`${API_URL}/api/posts`, postData);
+      const response = await axios.post('/api/posts', postData);
       console.log('Post created successfully:', response.data);
       
       // Navigate to home page after successful post creation
@@ -203,7 +201,7 @@ const AddPost: React.FC = () => {
               {photo && (
                 <Box sx={{ mt: 2 }}>
                   <img
-                    src={photo.startsWith('http') ? photo : `${API_URL}${photo}`}
+                    src={photo}
                     alt="Meal"
                     style={{ maxWidth: '100%', maxHeight: '300px', borderRadius: '8px' }}
                     onError={e => {
@@ -212,7 +210,7 @@ const AddPost: React.FC = () => {
                     }}
                   />
                   <Box sx={{ mt: 1 }}>
-                    <a href={photo.startsWith('http') ? photo : `${API_URL}${photo}`} target="_blank" rel="noopener noreferrer">View Uploaded Image URL</a>
+                    <a href={photo} target="_blank" rel="noopener noreferrer">View Uploaded Image URL</a>
                   </Box>
                 </Box>
               )}

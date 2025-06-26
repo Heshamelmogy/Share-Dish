@@ -9,13 +9,6 @@ import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import Tooltip from '@mui/material/Tooltip';
 
-const API_URL = process.env.REACT_APP_API_URL;
-
-const API_URL =
-  window.location.hostname.includes("github.dev") || window.location.hostname.includes("app.github.dev")
-    ? "https://shiny-guide-q77q6pw7xwg42x6g-5000.app.github.dev"
-    : "http://localhost:5000";
-
 const Navbar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -28,7 +21,7 @@ const Navbar: React.FC = () => {
       if (!user) return;
       console.log('Current Firebase UID:', user.uid);
       try {
-        const response = await axios.get(`${API_URL}/api/users/firebase/${user.uid}`);
+        const response = await axios.get('/api/users/firebase/' + user.uid);
         console.log('MongoDB user fetch response:', response);
         console.log('MongoDB user fetch response.data:', response.data);
         setMongoUserId(response.data._id);
@@ -45,7 +38,7 @@ const Navbar: React.FC = () => {
       if (!mongoUserId) return;
       
       try {
-        const response = await axios.get(`${API_URL}/api/messages/unread/${mongoUserId}`);
+        const response = await axios.get('/api/messages/unread/' + mongoUserId);
         setUnreadCount(response.data.count);
       } catch (err) {
         console.error('Error fetching unread count:', err);

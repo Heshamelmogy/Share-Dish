@@ -5,7 +5,17 @@ require('dotenv').config();
 
 const app = express();
 
-app.use(cors());
+// Allow CORS for localhost and Codespaces/GitHub.dev
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://shiny-guide-q77q6pw7xwg42x6g-3000.app.github.dev', // Add your Codespaces frontend URL here
+  'https://shiny-guide-q77q6pw7xwg42x6g-5000.app.github.dev', // Add your Codespaces backend URL here if needed
+];
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
 app.use(express.json());
 
 // Import and use routes
@@ -50,8 +60,9 @@ mongoose.connect(MONGO_URI, {
   const server = http.createServer(app);
   const io = new Server(server, {
     cors: {
-      origin: '*', // In production, set this to your frontend URL
-      methods: ['GET', 'POST']
+      origin: allowedOrigins,
+      methods: ['GET', 'POST'],
+      credentials: true
     }
   });
 

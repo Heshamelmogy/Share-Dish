@@ -41,6 +41,8 @@ interface Post {
   };
 }
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
 const Home: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -55,7 +57,7 @@ const Home: React.FC = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get(`${API_URL}/api/posts`);
+        const response = await axios.get('/api/posts');
         console.log('Fetched posts:', response.data);
         setPosts(response.data);
       } catch (err) {
@@ -77,7 +79,7 @@ const Home: React.FC = () => {
   const handleDelete = async (postId: string) => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
     try {
-      await axios.delete(`${API_URL}/api/posts/${postId}`);
+      await axios.delete('/api/posts/' + postId);
       setPosts(posts.filter(p => p._id !== postId));
     } catch (err) {
       alert('Failed to delete post.');
@@ -86,7 +88,7 @@ const Home: React.FC = () => {
 
   const handleReserve = async (postId: string) => {
     try {
-      const response = await axios.patch(`${API_URL}/api/posts/${postId}/reserve`);
+      const response = await axios.patch('/api/posts/' + postId + '/reserve');
       setPosts(posts.map(p => p._id === postId ? { ...p, reserved: true } : p));
     } catch (err) {
       alert('Failed to mark as reserved.');
@@ -94,7 +96,7 @@ const Home: React.FC = () => {
   };
 
   const handleViewAndChat = (postId: string) => {
-    navigate(`/post/${postId}`);
+    navigate('/post/' + postId);
   };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, postId: string) => {
@@ -190,7 +192,7 @@ const Home: React.FC = () => {
                         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                       >
-                        <MenuItem onClick={() => { handleMenuClose(); navigate(`/edit/${post._id}`); }}>
+                        <MenuItem onClick={() => { handleMenuClose(); navigate('/edit/' + post._id); }}>
                           <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
                         </MenuItem>
                         <MenuItem onClick={() => { handleMenuClose(); handleReserve(post._id); }} disabled={post.reserved}>
@@ -205,7 +207,7 @@ const Home: React.FC = () => {
                   <CardMedia
                     component="img"
                     height="200"
-                    image={post.photo && post.photo.startsWith('http') ? post.photo : `${API_URL}${post.photo || ''}`}
+                    image={post.photo}
                     alt="Meal"
                     sx={{ objectFit: 'cover' }}
                   />
