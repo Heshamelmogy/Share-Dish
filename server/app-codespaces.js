@@ -6,7 +6,6 @@ require('dotenv').config();
 const app = express();
 
 const allowedOrigins = [
-  'http://localhost:3000',
   'https://shiny-guide-q77q6pw7xwg42x6g-3000.app.github.dev'
 ];
 app.use(cors({
