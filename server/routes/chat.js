@@ -74,6 +74,7 @@ router.post('/:postId/message', async (req, res) => {
 
 // Get all private chats for a user
 router.get('/user/:userId', async (req, res) => {
+  console.log('GET /chat/user/:userId called with userId:', req.params.userId);
   try {
     const userId = req.params.userId;
     const chats = await Chat.find({ users: userId })

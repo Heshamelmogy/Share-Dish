@@ -54,8 +54,6 @@ interface Chat {
   }>;
 }
 
-const API_URL = process.env.REACT_APP_API_URL;
-
 const Messages: React.FC = () => {
   const { user } = useAuth();
   const [chats, setChats] = useState<Chat[]>([]);
@@ -78,7 +76,7 @@ const Messages: React.FC = () => {
       if (!user) return;
       
       try {
-        const response = await axios.get(`${API_URL}/api/users/firebase/${user.uid}`);
+        const response = await axios.get('/api/users/firebase/' + user.uid);
         setMongoUserId(response.data._id);
       } catch (err) {
         console.error('Error fetching MongoDB user ID:', err);
@@ -105,7 +103,7 @@ const Messages: React.FC = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get(`${API_URL}/api/chat/user/${mongoUserId}`);
+        const response = await axios.get('/api/chat/user/' + mongoUserId);
         setChats(response.data);
       } catch (err) {
         console.error('Error fetching chats:', err);
@@ -141,14 +139,14 @@ const Messages: React.FC = () => {
         text: message
       });
 
-      await axios.post(`${API_URL}/chat/${selectedChat.post._id}/message`, {
+      await axios.post('/api/chat/' + selectedChat.post._id + '/message', {
         sender: mongoUserId,
         receiver: otherUser._id,
         text: message
       });
 
       // Refresh the selected chat
-      const chatResponse = await axios.get(`${API_URL}/chat/${selectedChat.post._id}/${mongoUserId}/${otherUser._id}`);
+      const chatResponse = await axios.get('/api/chat/' + selectedChat.post._id + '/' + mongoUserId + '/' + otherUser._id);
       const updatedChat = { ...selectedChat, messages: chatResponse.data };
       setSelectedChat(updatedChat);
       
@@ -194,7 +192,7 @@ const Messages: React.FC = () => {
     setActionLoading(true);
     setActionError(null);
     try {
-      await axios.delete(`${API_URL}/chat/${selectedChat._id}`);
+      await axios.delete('/api/chat/' + selectedChat._id);
       setChats(chats.filter(chat => chat._id !== selectedChat._id));
       setSelectedChat(null);
       setActionSuccess('Conversation deleted successfully.');
@@ -213,7 +211,7 @@ const Messages: React.FC = () => {
     setActionLoading(true);
     setActionError(null);
     try {
-      await axios.post(`${API_URL}/users/${mongoUserId}/block`, { blockedUserId: otherUser._id });
+      await axios.post('/users/' + mongoUserId + '/block', { blockedUserId: otherUser._id });
       setActionSuccess('User blocked successfully.');
     } catch (err) {
       setActionError('Failed to block user.');
@@ -231,7 +229,7 @@ const Messages: React.FC = () => {
     setActionLoading(true);
     setActionError(null);
     try {
-      await axios.post(`${API_URL}/chat/${selectedChat._id}/report`, {
+      await axios.post('/api/chat/' + selectedChat._id + '/report', {
         reporterId: mongoUserId,
         reportedUserId: otherUser._id,
         message: reportMessage
