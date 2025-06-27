@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   Container, Paper, Typography, TextField, Button, Box, Stack, Alert, CircularProgress
 } from '@mui/material';
-import axios from 'axios';
+import api from '../api';
 
 const EditPost: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,7 +26,7 @@ const EditPost: React.FC = () => {
     const fetchPost = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`/api/posts`);
+        const response = await api.get(`/api/posts`);
         const found = response.data.find((p: any) => p._id === id);
         console.log('Fetched post for editing:', found);
         if (!found) throw new Error('Post not found');
@@ -53,7 +53,7 @@ const EditPost: React.FC = () => {
     formData.append('image', file);
     try {
       setSaving(true);
-      const response = await axios.post(`/api/posts/upload`, formData);
+      const response = await api.post(`/api/posts/upload`, formData);
       setPhoto(response.data.url);
       setError(null);
     } catch (err) {
@@ -68,7 +68,7 @@ const EditPost: React.FC = () => {
     setSaving(true);
     setError(null);
     try {
-      await axios.patch(`/api/posts/${id}`, {
+      await api.patch(`/api/posts/${id}`, {
         photo,
         description,
         ingredients: ingredients.split(',').map((i) => i.trim()),

@@ -25,6 +25,7 @@ import { auth } from '../firebaseConfig';
 import { updateProfile, updatePassword, EmailAuthProvider, reauthenticateWithCredential, deleteUser } from 'firebase/auth';
 import { Person } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import api from '../api';
 import axios from 'axios';
 
 interface UserProfile {
@@ -66,7 +67,7 @@ const Profile: React.FC = () => {
         console.log('Fetching user data for Firebase UID:', user.uid);
         
         // First, get the MongoDB user ID
-        const userResponse = await axios.get('/api/users/firebase/' + user.uid);
+        const userResponse = await api.get('/api/users/firebase/' + user.uid);
         console.log('User data response:', userResponse.data);
         
         if (!userResponse.data || !userResponse.data._id) {
@@ -77,7 +78,7 @@ const Profile: React.FC = () => {
         console.log('MongoDB User ID:', mongoUserId);
 
         // Then fetch the full profile
-        const profileResponse = await axios.get('/api/users/' + mongoUserId);
+        const profileResponse = await api.get('/api/users/' + mongoUserId);
         console.log('Profile data response:', profileResponse.data);
         
         setProfile(profileResponse.data);
@@ -105,12 +106,12 @@ const Profile: React.FC = () => {
     setSuccess(null);
 
     try {
-      const response = await axios.put('/api/users/' + profile._id, profile);
+      const response = await api.put('/api/users/' + profile._id, profile);
       if (response.data) {
         setProfile(response.data);
         setSuccess('Profile updated successfully!');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error updating profile:', err);
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.error || 'Failed to update profile. Please try again.');
@@ -192,7 +193,7 @@ const Profile: React.FC = () => {
 
       // Delete user from MongoDB first
       console.log('Deleting user from MongoDB...');
-      const mongoResponse = await axios.delete('/api/users/' + profile._id);
+      const mongoResponse = await api.delete('/api/users/' + profile._id);
       console.log('MongoDB deletion response:', mongoResponse.data);
 
       // Delete Firebase user

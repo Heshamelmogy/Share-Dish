@@ -13,7 +13,7 @@ import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 import Skeleton from '@mui/material/Skeleton';
 import Alert from '@mui/material/Alert';
-import axios from 'axios';
+import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { Restaurant } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -41,8 +41,6 @@ interface Post {
   };
 }
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
-
 const Home: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -57,7 +55,7 @@ const Home: React.FC = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get('/api/posts');
+        const response = await api.get('/api/posts');
         console.log('Fetched posts:', response.data);
         setPosts(response.data);
       } catch (err) {
@@ -79,7 +77,7 @@ const Home: React.FC = () => {
   const handleDelete = async (postId: string) => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
     try {
-      await axios.delete('/api/posts/' + postId);
+      await api.delete('/api/posts/' + postId);
       setPosts(posts.filter(p => p._id !== postId));
     } catch (err) {
       alert('Failed to delete post.');
@@ -88,7 +86,7 @@ const Home: React.FC = () => {
 
   const handleReserve = async (postId: string) => {
     try {
-      const response = await axios.patch('/api/posts/' + postId + '/reserve');
+      const response = await api.patch('/api/posts/' + postId + '/reserve');
       setPosts(posts.map(p => p._id === postId ? { ...p, reserved: true } : p));
     } catch (err) {
       alert('Failed to mark as reserved.');

@@ -16,6 +16,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { PhotoCamera, Add as AddIcon, Delete as DeleteIcon, Restaurant } from '@mui/icons-material';
+import api from '../api';
 import axios from 'axios';
 
 interface Ingredient {
@@ -45,7 +46,7 @@ const AddPost: React.FC = () => {
       if (!user) return;
       
       try {
-        const response = await axios.get('/api/users/firebase/' + user.uid);
+        const response = await api.get('/api/users/firebase/' + user.uid);
         setMongoUserId(response.data._id);
       } catch (err) {
         console.error('Error fetching MongoDB user ID:', err);
@@ -74,7 +75,7 @@ const AddPost: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post('/api/posts/upload', formData);
+      const response = await api.post('/api/posts/upload', formData);
       setPhoto(response.data.url);
       setError(null);
     } catch (err) {
@@ -135,12 +136,12 @@ const AddPost: React.FC = () => {
       };
 
       console.log('Submitting post data:', postData);
-      const response = await axios.post('/api/posts', postData);
+      const response = await api.post('/api/posts', postData);
       console.log('Post created successfully:', response.data);
       
       // Navigate to home page after successful post creation
       navigate('/');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error creating post:', err);
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.error || 'Failed to create post. Please try again.');

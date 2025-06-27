@@ -28,6 +28,7 @@ import {
   DialogActions,
 } from '@mui/material';
 import { Person as PersonIcon, Restaurant as RestaurantIcon, Message as MessageIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
+import api from '../api';
 import axios from 'axios';
 
 interface Chat {
@@ -76,18 +77,17 @@ const Messages: React.FC = () => {
       if (!user) return;
       
       try {
-        const response = await axios.get('/api/users/firebase/' + user.uid);
+        const response = await api.get('/api/users/firebase/' + user.uid);
         setMongoUserId(response.data._id);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error fetching MongoDB user ID:', err);
-        const error: any = err;
-        if (error.response) {
-          console.error('Error response data:', error.response.data);
-          console.error('Error response status:', error.response.status);
-        } else if (error.request) {
-          console.error('Error request:', error.request);
+        if (err.response) {
+          console.error('Error response data:', err.response.data);
+          console.error('Error response status:', err.response.status);
+        } else if (err.request) {
+          console.error('Error request:', err.request);
         } else {
-          console.error('Error message:', error.message);
+          console.error('Error message:', err.message);
         }
         setError('Failed to load user data. Please try again later.');
       }
@@ -103,9 +103,9 @@ const Messages: React.FC = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get('/api/chat/user/' + mongoUserId);
+        const response = await api.get('/api/chat/user/' + mongoUserId);
         setChats(response.data);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error fetching chats:', err);
         if (axios.isAxiosError(err)) {
           setError(err.response?.data?.error || 'Failed to load conversations. Please try again later.');
@@ -139,14 +139,14 @@ const Messages: React.FC = () => {
         text: message
       });
 
-      await axios.post('/api/chat/' + selectedChat.post._id + '/message', {
+      await api.post('/api/chat/' + selectedChat.post._id + '/message', {
         sender: mongoUserId,
         receiver: otherUser._id,
         text: message
       });
 
       // Refresh the selected chat
-      const chatResponse = await axios.get('/api/chat/' + selectedChat.post._id + '/' + mongoUserId + '/' + otherUser._id);
+      const chatResponse = await api.get('/api/chat/' + selectedChat.post._id + '/' + mongoUserId + '/' + otherUser._id);
       const updatedChat = { ...selectedChat, messages: chatResponse.data };
       setSelectedChat(updatedChat);
       
@@ -156,14 +156,14 @@ const Messages: React.FC = () => {
       ));
       
       setMessage('');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to send message:', err);
       if (axios.isAxiosError(err)) {
         console.error('Response data:', err.response?.data);
         console.error('Response status:', err.response?.status);
-        setError(`Failed to send message: ${err.response?.data?.error || err.message}`);
+        setActionError(err.response?.data?.error || 'Failed to send message.');
       } else {
-        setError('Failed to send message. Please try again.');
+        setActionError('Failed to send message.');
       }
     } finally {
       setSending(false);
@@ -192,7 +192,7 @@ const Messages: React.FC = () => {
     setActionLoading(true);
     setActionError(null);
     try {
-      await axios.delete('/api/chat/' + selectedChat._id);
+      await api.delete('/api/chat/' + selectedChat._id);
       setChats(chats.filter(chat => chat._id !== selectedChat._id));
       setSelectedChat(null);
       setActionSuccess('Conversation deleted successfully.');
@@ -211,7 +211,7 @@ const Messages: React.FC = () => {
     setActionLoading(true);
     setActionError(null);
     try {
-      await axios.post('/users/' + mongoUserId + '/block', { blockedUserId: otherUser._id });
+      await api.post('/users/' + mongoUserId + '/block', { blockedUserId: otherUser._id });
       setActionSuccess('User blocked successfully.');
     } catch (err) {
       setActionError('Failed to block user.');
@@ -229,7 +229,7 @@ const Messages: React.FC = () => {
     setActionLoading(true);
     setActionError(null);
     try {
-      await axios.post('/api/chat/' + selectedChat._id + '/report', {
+      await api.post('/api/chat/' + selectedChat._id + '/report', {
         reporterId: mongoUserId,
         reportedUserId: otherUser._id,
         message: reportMessage

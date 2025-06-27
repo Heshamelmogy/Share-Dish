@@ -6,7 +6,7 @@ import MessageIcon from '@mui/icons-material/Message';
 import AddIcon from '@mui/icons-material/Add';
 import PersonIcon from '@mui/icons-material/Person';
 import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
+import api from '../api';
 import Tooltip from '@mui/material/Tooltip';
 
 const Navbar: React.FC = () => {
@@ -21,7 +21,7 @@ const Navbar: React.FC = () => {
       if (!user) return;
       console.log('Current Firebase UID:', user.uid);
       try {
-        const response = await axios.get('/api/users/firebase/' + user.uid);
+        const response = await api.get('/api/users/firebase/' + user.uid);
         console.log('MongoDB user fetch response:', response);
         console.log('MongoDB user fetch response.data:', response.data);
         setMongoUserId(response.data._id);
@@ -38,7 +38,7 @@ const Navbar: React.FC = () => {
       if (!mongoUserId) return;
       
       try {
-        const response = await axios.get('/api/messages/unread/' + mongoUserId);
+        const response = await api.get('/api/messages/unread/' + mongoUserId);
         setUnreadCount(response.data.count);
       } catch (err) {
         console.error('Error fetching unread count:', err);

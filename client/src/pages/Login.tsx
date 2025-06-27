@@ -9,7 +9,7 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import axios from 'axios';
+import api from '../api';
 import { Email, Lock, Person, Wc, CalendarToday } from '@mui/icons-material';
 
 const Login: React.FC = () => {
@@ -142,13 +142,13 @@ const Login: React.FC = () => {
 
         // Check if user exists in MongoDB
         try {
-          const response = await axios.get('/api/users/firebase/' + userCredential.user.uid);
+          const response = await api.get('/api/users/firebase/' + userCredential.user.uid);
           console.log('MongoDB user check response:', response.data);
           
           if (!response.data) {
             // If user doesn't exist in MongoDB, create it
             console.log('Creating MongoDB user profile...');
-            const createResponse = await axios.post('/api/users/profile', {
+            const createResponse = await api.post('/api/users/profile', {
               firebaseUid: userCredential.user.uid,
               email: userCredential.user.email,
               firstName: '', // These will be empty for existing users

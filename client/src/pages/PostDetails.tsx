@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { Box, Typography, Paper, Button, CircularProgress, Chip, Grid, Card, CardContent, CardMedia } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 import { Message as MessageIcon, LocationOn, AccessTime, Restaurant } from '@mui/icons-material';
@@ -36,7 +36,7 @@ const PostDetails: React.FC = () => {
     const fetchPost = async () => {
       setLoading(true);
       try {
-        const postRes = await axios.get('/api/posts');
+        const postRes = await api.get('/api/posts');
         const found = postRes.data.find((p: Post) => p._id === id);
         setPost(found);
       } catch (err) {
@@ -52,7 +52,7 @@ const PostDetails: React.FC = () => {
     const fetchMongoUserId = async () => {
       if (!user) return;
       try {
-        const response = await axios.get('/api/users/firebase/' + user.uid);
+        const response = await api.get('/api/users/firebase/' + user.uid);
         setMongoUserId(response.data._id);
       } catch (err) {
         setMongoUserId(null);
@@ -65,7 +65,7 @@ const PostDetails: React.FC = () => {
     if (!mongoUserId || !post || !post.user?._id) return;
     try {
       // Create or fetch the chat
-      const response = await axios.post('/api/chat/start', {
+      const response = await api.post('/api/chat/start', {
         postId: post._id,
         userId1: mongoUserId,
         userId2: post.user._id,
@@ -81,7 +81,7 @@ const PostDetails: React.FC = () => {
     if (!post || !mongoUserId) return;
     
     try {
-      await axios.patch('/api/posts/' + post._id + '/reserve');
+      await api.patch('/api/posts/' + post._id + '/reserve');
       setPost({ ...post, reserved: true });
     } catch (err) {
       setError('Failed to reserve post.');
@@ -92,7 +92,7 @@ const PostDetails: React.FC = () => {
     if (!post || !mongoUserId) return;
     
     try {
-      await axios.delete('/api/posts/' + post._id);
+      await api.delete('/api/posts/' + post._id);
       navigate('/');
     } catch (err) {
       setError('Failed to delete post.');
